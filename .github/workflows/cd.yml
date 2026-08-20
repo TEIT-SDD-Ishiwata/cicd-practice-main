@@ -1,0 +1,30 @@
+name: Deployment Pipeline
+
+# mainブランチへコードがPush（PRマージ）された時に実行
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # Staging環境への自動デプロイ
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+    - uses: actions/checkout@v4
+    - name: Deploy to Staging
+      run: |
+        echo "Stagingへデプロイ中..."
+        echo "使用キー: ${{ secrets.DEPLOY_KEY }}"
+
+  # Production環境へのデプロイ（Staging成功後に実行）
+  deploy-production:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - uses: actions/checkout@v4
+    - name: Deploy to Production
+      run: |
+        echo "本番環境へデプロイ完了！"
+        echo "使用キー: ${{ secrets.DEPLOY_KEY }}"
